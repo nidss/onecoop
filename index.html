@@ -27,7 +27,7 @@
 })();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OneCOOP Loan Prototype</title>
+    <title>สหกรณ์ออมทรัพย์ข้าราชการฝ่ายรัฐสภา - Loan Prototype</title>
     <style>
         :root {
             /* Warm & Soft - Green/Cream Palette */
@@ -105,7 +105,8 @@
 
         /* Chat UI */
         .chat-header { padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; z-index: 10; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: contain; }
         .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
         .msg-row { display: flex; flex-direction: column; width: 100%; }
         .msg-user { align-self: flex-end; background: #4a7c59; color: white; padding: 10px 18px; border-radius: 20px; border-top-right-radius: 4px; font-size: 15px; font-weight: 500; }
@@ -117,15 +118,34 @@
         .action-body { padding: 16px; font-size: 15px; line-height: 1.4; color: var(--fg); }
         .action-btn { background: #4a7c59; color: white; padding: 16px; text-align: center; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-        /* Rich Menu */
-        .rich-menu-container { background: #4a7c59; padding: 4px; display: flex; flex-direction: column; gap: 4px; }
-        .rich-banner { width: 100%; height: 130px; background: linear-gradient(135deg, #4a7c59 0%, #6ba37b 100%); border-radius: 12px; display: flex; align-items: center; padding: 20px; color: white; position: relative; overflow: hidden; }
-        .rich-banner::after { content: '🌿'; font-size: 110px; position: absolute; right: -20px; bottom: -20px; opacity: 0.15; }
-        .rich-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-        .rich-card { background: #6ba37b; height: 130px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 12px 8px; cursor: pointer; transition: transform 0.1s; }
-        .rich-card:active { transform: scale(0.97); }
-        .rich-card-label { color: white; font-size: 12px; font-weight: 800; text-align: center; line-height: 1.2; }
-        .rich-card-btn { background: white; color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        /* Rich Menu - รูปเดียวรวม banner + 3 ปุ่ม พร้อม tap areas ซ้อนทับ */
+        .rich-menu-container {
+            background: #fff;
+            padding: 0;
+            position: relative;
+            aspect-ratio: 2500 / 1200; /* ขนาดมาตรฐาน LINE Rich Menu Custom */
+            width: 100%;
+            background-image: url('https://raw.githubusercontent.com/nidss/onecoop/main/rich_menu01.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        /* Tap areas ซ้อนทับเป็นเปอร์เซ็นต์ของ container เพื่อ scale ตามจอ
+           Layout: banner เต็มความกว้างด้านบน (สูง ~58%), 3 ปุ่มแถวล่าง (สูง ~42%) */
+        .rich-tap {
+            position: absolute;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            padding: 0;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.15);
+            transition: background 0.12s ease;
+        }
+        .rich-tap:active { background: rgba(255, 255, 255, 0.18); }
+        .rich-tap.banner  { top: 0;        left: 0;        width: 100%;     height: 58.33%; }
+        .rich-tap.btn-1   { top: 58.33%;   left: 0;        width: 33.33%;   height: 41.67%; }
+        .rich-tap.btn-2   { top: 58.33%;   left: 33.33%;   width: 33.33%;   height: 41.67%; }
+        .rich-tap.btn-3   { top: 58.33%;   left: 66.66%;   width: 33.34%;   height: 41.67%; }
 
         /* Forms & Status View */
         .view-header { padding: 40px 24px 12px; background: var(--bg); display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--border); }
@@ -297,9 +317,14 @@
             
             <!-- VIEW: CHAT -->
             <div id="view-chat" class="app-view active">
-                <div class="chat-header"><div class="avatar">O</div><div style="flex:1"><div style="font-weight:700; font-size:15px;">สหกรณ์ OneCOOP</div><div style="font-size:11px; color:var(--accent); font-weight:600;">● ออนไลน์</div></div></div>
-                <div class="messages" id="chat-messages"><div class="msg-row"><div class="msg-bot">สวัสดีค่ะ ยินดีต้อนรับสู่บริการสหกรณ์ OneCOOP ออนไลน์ค่ะ</div></div><div class="msg-row" id="initial-instruction"><div class="msg-bot">กรุณายืนยันตัวตนก่อนทำรายการขอกู้สินเชื่อนะคะ</div></div></div>
-                <div class="rich-menu-container"><div class="rich-banner"><div><div style="font-size:20px; font-weight:900; margin-bottom:4px;">กู้ง่าย ได้ไว</div><div style="font-size:13px; font-weight:600; opacity:0.9;">สมาชิก OneCOOP เท่านั้น</div><div class="rich-card-btn" style="margin-top:10px; display:inline-block;">ดูรายละเอียด</div></div></div><div class="rich-grid"><div class="rich-card" onclick="showView('view-verify')"><div style="font-size:26px;">👤</div><div class="rich-card-label">ยืนยัน<br>ตัวตน</div><div class="rich-card-btn">เริ่มเลย</div></div><div class="rich-card" onclick="handleLoanClick()"><div style="font-size:26px;">💰</div><div class="rich-card-label">ขอกู้<br>สินเชื่อ</div><div class="rich-card-btn">กดเลย</div></div><div class="rich-card" onclick="showView('view-status')"><div style="font-size:26px;">🔎</div><div class="rich-card-label">ติดตาม<br>สถานะ</div><div class="rich-card-btn">เช็คเลย</div></div></div></div>
+                <div class="chat-header"><div class="avatar"><img src="https://raw.githubusercontent.com/nidss/onecoop/main/main_logo.png" alt="โลโก้สหกรณ์ออมทรัพย์ข้าราชการฝ่ายรัฐสภา"></div><div style="flex:1"><div style="font-weight:700; font-size:14px; line-height:1.2;">สหกรณ์ออมทรัพย์ข้าราชการฝ่ายรัฐสภา</div><div style="font-size:11px; color:var(--accent); font-weight:600;">● ออนไลน์</div></div></div>
+                <div class="messages" id="chat-messages"><div class="msg-row"><div class="msg-bot">สวัสดีค่ะ ยินดีต้อนรับสู่บริการสหกรณ์ออมทรัพย์ข้าราชการฝ่ายรัฐสภาออนไลน์ค่ะ</div></div><div class="msg-row" id="initial-instruction"><div class="msg-bot">กรุณายืนยันตัวตนก่อนทำรายการขอกู้สินเชื่อนะคะ</div></div></div>
+                <div class="rich-menu-container">
+                    <button class="rich-tap banner" onclick="handleLoanClick()" aria-label="กู้ง่าย ได้ไว - คำนวณวงเงินกู้"></button>
+                    <button class="rich-tap btn-1" onclick="showView('view-verify')" aria-label="ยืนยันตัวตน"></button>
+                    <button class="rich-tap btn-2" onclick="handleLoanClick()" aria-label="ขอกู้สินเชื่อ"></button>
+                    <button class="rich-tap btn-3" onclick="showView('view-status')" aria-label="ติดตามสถานะ"></button>
+                </div>
                 <div style="background:white; height:40px; display:flex; align-items:center; justify-content:center; border-top:1px solid var(--border); font-size:13px; color:#777;">เมนู</div>
             </div>
 
@@ -336,7 +361,7 @@
                 <div class="form-content">
                     
                     <div style="background:var(--accent-soft); padding:16px; border-radius:12px; margin-bottom:24px; border:1px solid var(--accent-light);">
-                        <div style="font-weight:800; color:var(--accent); font-size:14px;">เงินกู้สมาชิกสหกรณ์ OneCOOP</div>
+                        <div style="font-weight:800; color:var(--accent); font-size:14px;">เงินกู้สมาชิกสหกรณ์ออมทรัพย์ข้าราชการฝ่ายรัฐสภา</div>
                     </div>
 
                     <div class="form-group"><label class="label">ประเภทเงินกู้</label><select class="input"><option>เงินกู้สามัญ</option><option>เงินกู้ฉุกเฉิน</option><option>เงินกู้เพื่อสวัสดิการ</option></select></div>
@@ -468,6 +493,7 @@
 
     function startThaiD() {
         document.getElementById('loading-text').innerText = "กำลังเชื่อมต่อ ThaiD";
+        document.getElementById('thaid-loading-img').style.display = 'block';
         showView('view-thaid');
         setTimeout(() => {
             // After ThaiD loading -> show face scan view
@@ -484,6 +510,7 @@
         loanAmount = document.getElementById('loan-amount-input').value || "50,000";
         loanTerm = document.getElementById('loan-term-input').value;
         document.getElementById('loading-text').innerText = "กำลังส่งข้อมูลคำขอกู้";
+        document.getElementById('thaid-loading-img').style.display = 'none';
         showView('view-thaid');
         setTimeout(() => { isApplied = true; showView('view-success'); }, 2500);
     }
