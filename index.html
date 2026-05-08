@@ -156,6 +156,10 @@
 
         .spinner { width: 50px; height: 50px; border: 4px solid var(--accent-soft); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 40px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes thaid-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
         .success-circle { width: 80px; height: 80px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; margin: 0 auto 24px; }
 
         /* Face Scan View */
@@ -213,7 +217,7 @@
         /* Dark overlay outside the oval - uses huge box-shadow trick */
         .face-oval {
             position: absolute;
-            top: 50%;
+            top: 42%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 240px;
@@ -257,7 +261,7 @@
         /* Corner brackets that pulse */
         .face-corners {
             position: absolute;
-            top: 50%;
+            top: 42%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 264px;
@@ -365,7 +369,12 @@
             </div>
 
             <!-- VIEW: THAID/LOADING -->
-            <div id="view-thaid" class="app-view" style="text-align:center; justify-content:center; padding:40px; background:var(--bg);"><div class="spinner"></div><h3 id="loading-text">กำลังประมวลผล...</h3></div>
+            <div id="view-thaid" class="app-view" style="text-align:center; justify-content:center; align-items:center; padding:40px; background:var(--bg);">
+                <img src="https://raw.githubusercontent.com/nidss/onecoop/main/loading_thaid.png" alt="ThaiD" id="thaid-loading-img" style="width:140px; height:auto; margin-bottom:32px; animation: thaid-float 2s ease-in-out infinite;">
+                <div class="spinner" style="margin: 0 auto 24px;"></div>
+                <h3 id="loading-text" style="margin:0; color:var(--fg); font-size:16px;">กำลังประมวลผล...</h3>
+                <p style="margin-top:8px; color:var(--muted); font-size:13px;">โปรดรอสักครู่...</p>
+            </div>
 
             <!-- VIEW: SUCCESS -->
             <div id="view-success" class="app-view" style="text-align:center; justify-content:center; padding:40px; background:var(--bg);"><div class="success-circle">✓</div><h2 style="margin-bottom:12px;">ยื่นคำขอสำเร็จ!</h2><p style="color:var(--muted); margin-bottom:40px;">เราได้รับคำขอเรียบร้อยแล้ว<br>เจ้าหน้าที่จะแจ้งผลกลับในเร็วๆ นี้ค่ะ</p><button class="btn btn-primary" onclick="showView('view-chat')">ตกลง</button></div>
