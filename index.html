@@ -157,6 +157,162 @@
         .spinner { width: 50px; height: 50px; border: 4px solid var(--accent-soft); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 40px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .success-circle { width: 80px; height: 80px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; margin: 0 auto 24px; }
+
+        /* Face Scan View */
+        #view-face-scan { background: #a39e95; }
+        .face-scan-header {
+            padding: 40px 24px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #fff;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .face-scan-header button {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #2c3e2d;
+            padding: 0;
+            font-weight: 700;
+        }
+        .face-scan-header h2 {
+            margin: 0;
+            color: #2c3e2d;
+            font-size: 18px;
+            font-weight: 800;
+        }
+        .face-scan-stage {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #a39e95;
+            padding: 20px;
+        }
+        /* Oval scan frame */
+        .face-oval {
+            position: relative;
+            width: 260px;
+            height: 340px;
+            background: #ffffff;
+            border: 3px solid #4a7c59;
+            border-radius: 50%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        /* Person silhouette inside oval */
+        .face-silhouette {
+            width: 75%;
+            height: 70%;
+            position: relative;
+            margin-bottom: 0;
+        }
+        .face-silhouette::before {
+            /* Head */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 75px;
+            height: 80px;
+            background: #d8d8d4;
+            border-radius: 50%;
+        }
+        .face-silhouette::after {
+            /* Shoulders/torso */
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 160px;
+            height: 90px;
+            background: #d8d8d4;
+            border-radius: 80px 80px 0 0;
+        }
+        /* Animated scan line */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, #4a7c59 20%, #6ba37b 50%, #4a7c59 80%, transparent 100%);
+            box-shadow: 0 0 16px 4px rgba(74, 124, 89, 0.6), 0 0 32px 8px rgba(107, 163, 123, 0.3);
+            animation: scan-move 2.4s ease-in-out infinite;
+            z-index: 3;
+        }
+        @keyframes scan-move {
+            0%, 100% { top: 6%; opacity: 1; }
+            50% { top: 92%; opacity: 1; }
+        }
+        /* Animated glow on the oval border */
+        .face-oval::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 3px solid #6ba37b;
+            opacity: 0.6;
+            animation: pulse-oval 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes pulse-oval {
+            0%, 100% { transform: scale(1); opacity: 0.5; box-shadow: 0 0 0 0 rgba(107, 163, 123, 0.5); }
+            50% { transform: scale(1.04); opacity: 0; box-shadow: 0 0 0 16px rgba(107, 163, 123, 0); }
+        }
+        /* Corner brackets that animate */
+        .face-corners {
+            position: absolute;
+            inset: -16px;
+            pointer-events: none;
+        }
+        .face-corner {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #4a7c59;
+            animation: corner-pulse 1.6s ease-in-out infinite;
+        }
+        .face-corner.tl { top: 8%; left: 4%; border-right: none; border-bottom: none; border-radius: 6px 0 0 0; }
+        .face-corner.tr { top: 8%; right: 4%; border-left: none; border-bottom: none; border-radius: 0 6px 0 0; }
+        .face-corner.bl { bottom: 8%; left: 4%; border-right: none; border-top: none; border-radius: 0 0 0 6px; }
+        .face-corner.br { bottom: 8%; right: 4%; border-left: none; border-top: none; border-radius: 0 0 6px 0; }
+        @keyframes corner-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.92); }
+        }
+        /* Caption text */
+        .face-scan-caption {
+            margin-top: 32px;
+            text-align: center;
+        }
+        .face-scan-caption .title {
+            font-size: 17px;
+            font-weight: 800;
+            color: #2c3e2d;
+            margin-bottom: 8px;
+        }
+        .face-scan-caption .subtitle {
+            font-size: 14px;
+            color: #4a7c59;
+            font-weight: 600;
+            opacity: 0.85;
+            animation: subtitle-fade 2s ease-in-out infinite;
+        }
+        @keyframes subtitle-fade {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -180,6 +336,30 @@
             <div id="view-verify" class="app-view">
                 <div class="view-header"><button style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--fg);" onclick="showView('view-chat')">←</button><h2 style="margin:0;">ยืนยันตัวตน</h2></div>
                 <div class="form-content"><p style="color:var(--muted); margin-bottom:32px;">เลือกช่องทางที่ท่านสะดวกเพื่อยืนยันความเป็นสมาชิก</p><div class="btn btn-outline" style="margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:12px;" onclick="startThaiD()"><span style="font-size:24px;">🇹🇭</span> ThaiD (แอปฯ รัฐ)</div><div class="btn btn-outline" style="opacity:0.4; pointer-events:none; margin-bottom:24px;">🏦 NDID (แอปธนาคาร)</div><button class="btn" style="color:var(--muted);" onclick="showView('view-chat')">ยกเลิก</button></div>
+            </div>
+
+            <!-- VIEW: FACE SCAN -->
+            <div id="view-face-scan" class="app-view">
+                <div class="face-scan-header">
+                    <button onclick="showView('view-verify')">←</button>
+                    <h2>สแกนใบหน้า</h2>
+                </div>
+                <div class="face-scan-stage">
+                    <div class="face-oval">
+                        <div class="face-silhouette"></div>
+                        <div class="scan-line"></div>
+                        <div class="face-corners">
+                            <div class="face-corner tl"></div>
+                            <div class="face-corner tr"></div>
+                            <div class="face-corner bl"></div>
+                            <div class="face-corner br"></div>
+                        </div>
+                    </div>
+                    <div class="face-scan-caption">
+                        <div class="title">กรุณาจัดใบหน้าให้อยู่ในกรอบ</div>
+                        <div class="subtitle">ขยับใบหน้าช้าๆ เพื่อวิเคราะห์ข้อมูล</div>
+                    </div>
+                </div>
             </div>
 
             <!-- VIEW: VERIFY SUCCESS -->
@@ -320,10 +500,14 @@
         document.getElementById('loading-text').innerText = "กำลังเชื่อมต่อ ThaiD";
         showView('view-thaid');
         setTimeout(() => {
-            isVerified = true;
-            document.getElementById('initial-instruction').innerHTML = '<div class="msg-bot">ยืนยันตัวตนสำเร็จแล้วค่ะ! ท่านสามารถเริ่มขอกู้สินเชื่อได้ทันทีค่ะ</div>';
-            showView('view-verify-success');
-        }, 2000);
+            // After ThaiD loading -> show face scan view
+            showView('view-face-scan');
+            setTimeout(() => {
+                isVerified = true;
+                document.getElementById('initial-instruction').innerHTML = '<div class="msg-bot">ยืนยันตัวตนสำเร็จแล้วค่ะ! ท่านสามารถเริ่มขอกู้สินเชื่อได้ทันทีค่ะ</div>';
+                showView('view-verify-success');
+            }, 2500);
+        }, 1500);
     }
 
     function submitLoan() {
