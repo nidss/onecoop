@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head><script data-od-sandbox-shim>(function(){
+  function makeStore(){
+    var data = {};
+    var api = {
+      getItem: function(k){ return Object.prototype.hasOwnProperty.call(data, k) ? data[k] : null; },
+      setItem: function(k, v){ data[k] = String(v); },
+      removeItem: function(k){ delete data[k]; },
+      clear: function(){ data = {}; },
+      key: function(i){ return Object.keys(data)[i] || null; }
+    };
+    Object.defineProperty(api, 'length', { get: function(){ return Object.keys(data).length; } });
+    return api;
+  }
+  function tryShim(name){
+    var works = false;
+    try { works = !!window[name] && typeof window[name].getItem === 'function'; void window[name].length; }
+    catch (_) { works = false; }
+    if (works) return;
+    try { Object.defineProperty(window, name, { configurable: true, value: makeStore() }); }
+    catch (_) { try { window[name] = makeStore(); } catch (__) {} }
+  }
+  tryShim('localStorage');
+  tryShim('sessionStorage');
+})();</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneCOOP Loan Prototype</title>
+    <style>
+        :root {
+            /* Warm & Soft - Green/Cream Palette */
+            --bg: oklch(97% 0.018 70);
+            --surface: #ffffff;
+            --fg: #2c3e2d;
+            --muted: #6b7c6c;
+            --border: oklch(90% 0.014 70);
+            --accent: #4a7c59; 
+            --accent-light: #6ba37b;
+            --accent-soft: oklch(94% 0.03 145);
+            --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --shadow: 0 4px 12px rgba(74, 124, 89, 0.08);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0; padding: 0;
+            background: #eef2ef;
+            font-family: var(--font-body);
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden;
+        }
+
+        /* iPhone 15 Pro Frame */
+        .iphone-frame {
+            width: 393px; height: 852px;
+            background: #1a1a1a;
+            border-radius: 54px;
+            position: relative;
+            box-shadow: 0 0 0 4px #333, 0 0 0 11px #444, 0 20px 50px rgba(0,0,0,0.4);
+            overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        .dynamic-island {
+            width: 120px; height: 36px;
+            background: #000; border-radius: 20px;
+            position: absolute; top: 11px; left: 50%;
+            transform: translateX(-50%); z-index: 100;
+        }
+
+        .screen-content {
+            flex: 1; background: #f0f7f1;
+            border-radius: 44px; margin: 8px;
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        .status-bar {
+            height: 44px; display: flex; justify-content: space-between;
+            align-items: flex-end; padding: 0 32px 10px;
+            font-size: 14px; font-weight: 600; color: var(--fg);
+        }
+
+        .home-indicator {
+            width: 140px; height: 5px;
+            background: rgba(0,0,0,0.1); border-radius: 10px;
+            position: absolute; bottom: 8px; left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Layout & Transitions */
+        .app-view {
+            position: absolute; inset: 0;
+            display: none; flex-direction: column;
+            background: #f0f7f1;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .app-view.active { display: flex; opacity: 1; transform: translateY(0); }
+
+        /* Chat UI */
+        .chat-header { padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; z-index: 10; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        .msg-row { display: flex; flex-direction: column; width: 100%; }
+        .msg-user { align-self: flex-end; background: #4a7c59; color: white; padding: 10px 18px; border-radius: 20px; border-top-right-radius: 4px; font-size: 15px; font-weight: 500; }
+        .msg-bot { align-self: flex-start; background: #fff; padding: 12px 16px; border-radius: 18px; border-top-left-radius: 4px; font-size: 15px; line-height: 1.5; color: var(--fg); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        .warning-box { background: #fff; border: 1.5px solid #ffccd5; border-radius: 20px; padding: 20px; max-width: 85%; align-self: flex-start; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-bottom: 8px; }
+        .warning-header { display: flex; align-items: center; gap: 10px; color: #b54747; font-weight: 700; margin-bottom: 10px; }
+        .action-card { background: #fff; border-radius: 20px; width: 85%; align-self: flex-start; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .action-body { padding: 16px; font-size: 15px; line-height: 1.4; color: var(--fg); }
+        .action-btn { background: #4a7c59; color: white; padding: 16px; text-align: center; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+        /* Rich Menu */
+        .rich-menu-container { background: #4a7c59; padding: 4px; display: flex; flex-direction: column; gap: 4px; }
+        .rich-banner { width: 100%; height: 130px; background: linear-gradient(135deg, #4a7c59 0%, #6ba37b 100%); border-radius: 12px; display: flex; align-items: center; padding: 20px; color: white; position: relative; overflow: hidden; }
+        .rich-banner::after { content: '🌿'; font-size: 110px; position: absolute; right: -20px; bottom: -20px; opacity: 0.15; }
+        .rich-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+        .rich-card { background: #6ba37b; height: 130px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 12px 8px; cursor: pointer; transition: transform 0.1s; }
+        .rich-card:active { transform: scale(0.97); }
+        .rich-card-label { color: white; font-size: 12px; font-weight: 800; text-align: center; line-height: 1.2; }
+        .rich-card-btn { background: white; color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+        /* Forms & Status View */
+        .view-header { padding: 40px 24px 12px; background: var(--bg); display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--border); }
+        .form-content { flex: 1; padding: 24px; overflow-y: auto; background: var(--bg); }
+        .form-group { margin-bottom: 24px; }
+        .label { display: block; font-size: 14px; font-weight: 800; margin-bottom: 8px; color: var(--fg); }
+        .input { width: 100%; padding: 14px; border-radius: 12px; border: 1.5px solid var(--border); font-size: 16px; outline: none; background: #fff; color: var(--fg); }
+        .input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+        
+        .upload-box { border: 2px dashed var(--accent); padding: 32px 20px; text-align: center; border-radius: var(--radius-md); background: #fff; color: var(--accent); cursor: pointer; transition: background 0.2s; }
+        .upload-box:active { background: var(--accent-soft); }
+
+        .btn { padding: 16px; border-radius: var(--radius-md); border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; width: 100%; }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 10px rgba(74, 124, 89, 0.2); }
+        .btn-outline { background: transparent; border: 2.2px solid var(--accent); color: var(--accent); }
+
+        /* Status Components */
+        .status-hero { background: white; padding: 24px; border-radius: 24px; box-shadow: var(--shadow); margin-bottom: 20px; text-align: center; }
+        .status-badge { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 800; background: var(--accent-soft); color: var(--accent); margin-bottom: 12px; }
+        .summary-card { background: white; padding: 16px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 12px; }
+        
+        .timeline { position: relative; padding-left: 36px; margin-top: 16px; }
+        .timeline::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+        .step { position: relative; padding-bottom: 32px; }
+        .step-icon { position: absolute; left: -36px; width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .step.done .step-icon { background: var(--accent); border-color: var(--accent); color: white; }
+        .step.current .step-icon { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+
+        .spinner { width: 50px; height: 50px; border: 4px solid var(--accent-soft); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 40px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .success-circle { width: 80px; height: 80px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; margin: 0 auto 24px; }
+    </style>
+</head>
+<body>
+
+<div class="iphone-frame">
+    <div class="dynamic-island"></div>
+    <div class="screen-content">
+        <div class="status-bar"><span>9:41</span><div>📶🔋</div></div>
+        
+        <div id="app" style="flex:1; position:relative;">
+            
+            <!-- VIEW: CHAT -->
+            <div id="view-chat" class="app-view active">
+                <div class="chat-header"><div class="avatar">O</div><div style="flex:1"><div style="font-weight:700; font-size:15px;">สหกรณ์ OneCOOP</div><div style="font-size:11px; color:var(--accent); font-weight:600;">● ออนไลน์</div></div></div>
+                <div class="messages" id="chat-messages"><div class="msg-row"><div class="msg-bot">สวัสดีค่ะ ยินดีต้อนรับสู่บริการสหกรณ์ OneCOOP ออนไลน์ค่ะ</div></div><div class="msg-row" id="initial-instruction"><div class="msg-bot">กรุณายืนยันตัวตนก่อนทำรายการขอกู้สินเชื่อนะคะ</div></div></div>
+                <div class="rich-menu-container"><div class="rich-banner"><div><div style="font-size:20px; font-weight:900; margin-bottom:4px;">กู้ง่าย ได้ไว</div><div style="font-size:13px; font-weight:600; opacity:0.9;">สมาชิก OneCOOP เท่านั้น</div><div class="rich-card-btn" style="margin-top:10px; display:inline-block;">ดูรายละเอียด</div></div></div><div class="rich-grid"><div class="rich-card" onclick="showView('view-verify')"><div style="font-size:26px;">👤</div><div class="rich-card-label">ยืนยัน<br>ตัวตน</div><div class="rich-card-btn">เริ่มเลย</div></div><div class="rich-card" onclick="handleLoanClick()"><div style="font-size:26px;">💰</div><div class="rich-card-label">ขอกู้<br>สินเชื่อ</div><div class="rich-card-btn">กดเลย</div></div><div class="rich-card" onclick="showView('view-status')"><div style="font-size:26px;">🔎</div><div class="rich-card-label">ติดตาม<br>สถานะ</div><div class="rich-card-btn">เช็คเลย</div></div></div></div>
+                <div style="background:white; height:40px; display:flex; align-items:center; justify-content:center; border-top:1px solid var(--border); font-size:13px; color:#777;">เมนู</div>
+            </div>
+
+            <!-- VIEW: VERIFY SELECT -->
+            <div id="view-verify" class="app-view">
+                <div class="view-header"><button style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--fg);" onclick="showView('view-chat')">←</button><h2 style="margin:0;">ยืนยันตัวตน</h2></div>
+                <div class="form-content"><p style="color:var(--muted); margin-bottom:32px;">เลือกช่องทางที่ท่านสะดวกเพื่อยืนยันความเป็นสมาชิก</p><div class="btn btn-outline" style="margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:12px;" onclick="startThaiD()"><span style="font-size:24px;">🇹🇭</span> ThaiD (แอปฯ รัฐ)</div><div class="btn btn-outline" style="opacity:0.4; pointer-events:none; margin-bottom:24px;">🏦 NDID (แอปธนาคาร)</div><button class="btn" style="color:var(--muted);" onclick="showView('view-chat')">ยกเลิก</button></div>
+            </div>
+
+            <!-- VIEW: VERIFY SUCCESS -->
+            <div id="view-verify-success" class="app-view" style="text-align:center; justify-content:center; padding:40px; background:var(--bg);"><div class="success-circle">✓</div><h2 style="margin-bottom:12px;">ยืนยันตัวตนสำเร็จ</h2><p style="color:var(--muted); margin-bottom:48px;">ท่านสามารถเริ่มขอกู้สินเชื่อได้ทันทีค่ะ</p><button class="btn btn-primary" style="margin-bottom:20px;" onclick="showView('view-loan')">ขอกู้สินเชื่อ</button><div style="color:var(--accent); font-weight:700; cursor:pointer;" onclick="showView('view-chat')">กลับหน้าแรก</div></div>
+
+            <!-- VIEW: LOAN FORM (FULL FIELDS FROM IMAGE) -->
+            <div id="view-loan" class="app-view">
+                <div class="view-header"><button style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--fg);" onclick="showView('view-chat')">←</button><h2 style="margin:0;">ขอกู้สินเชื่อ</h2></div>
+                <div class="form-content">
+                    
+                    <div style="background:var(--accent-soft); padding:16px; border-radius:12px; margin-bottom:24px; border:1px solid var(--accent-light);">
+                        <div style="font-weight:800; color:var(--accent); font-size:14px;">เงินกู้สมาชิกสหกรณ์ OneCOOP</div>
+                    </div>
+
+                    <div class="form-group"><label class="label">ประเภทเงินกู้</label><select class="input"><option>เงินกู้สามัญ</option><option>เงินกู้ฉุกเฉิน</option><option>เงินกู้เพื่อสวัสดิการ</option></select></div>
+                    <div class="form-group"><label class="label">วงเงินที่ต้องการกู้ (บาท)</label><input type="number" id="loan-amount-input" class="input" placeholder="ระบุจำนวนเงิน"></div>
+                    <div class="form-group"><label class="label">ระยะเวลาผ่อนชำระ</label><select id="loan-term-input" class="input"><option value="12">12 งวด (1 ปี)</option><option value="24">24 งวด (2 ปี)</option><option value="36">36 งวด (3 ปี)</option><option value="48">48 งวด (4 ปี)</option></select></div>
+                    <div class="form-group"><label class="label">วัตถุประสงค์การกู้</label><input class="input" placeholder="เช่น ซ่อมแซมบ้าน / ทุนการศึกษา"></div>
+                    <div class="form-group"><label class="label">รายได้ต่อเดือน (บาท)</label><input type="number" class="input" placeholder="ระบุรายได้รวม"></div>
+                    <div class="form-group"><label class="label">อาชีพ</label><input class="input" placeholder="ระบุอาชีพปัจจุบัน"></div>
+                    <div class="form-group"><label class="label">สถานที่ทำงาน</label><input class="input" placeholder="ระบุชื่อหน่วยงาน/บริษัท"></div>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                        <div class="form-group"><label class="label">เบอร์โทรศัพท์</label><input type="tel" class="input" placeholder="08x-xxxxxxx"></div>
+                        <div class="form-group"><label class="label">อีเมล</label><input type="email" class="input" placeholder="name@mail.com"></div>
+                    </div>
+
+                    <div class="form-group"><label class="label">ที่อยู่ปัจจุบัน</label><textarea class="input" style="height:80px; resize:none;" placeholder="บ้านเลขที่, ถนน, ตำบล/แขวง..."></textarea></div>
+
+                    <div class="form-group">
+                        <label class="label">แนบหลักฐานเอกสาร (สลิปเงินเดือน / สำเนาบัตร)</label>
+                        <div class="upload-box">
+                            <div style="font-size:32px; margin-bottom:8px;">📎</div>
+                            <div style="font-weight:800; font-size:15px;">คลิกเพื่ออัปโหลดไฟล์</div>
+                            <div style="font-size:11px; opacity:0.6; margin-top:4px;">รองรับไฟล์ PDF, JPG, PNG ไม่เกิน 5MB</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="margin-top:12px;" onclick="submitLoan()">ส่งคำขอกู้สินเชื่อ</button>
+                    <button class="btn" style="margin-top:12px; color:var(--muted);" onclick="showView('view-chat')">ยกเลิก</button>
+                </div>
+            </div>
+
+            <!-- VIEW: THAID/LOADING -->
+            <div id="view-thaid" class="app-view" style="text-align:center; justify-content:center; padding:40px; background:var(--bg);"><div class="spinner"></div><h3 id="loading-text">กำลังประมวลผล...</h3></div>
+
+            <!-- VIEW: SUCCESS -->
+            <div id="view-success" class="app-view" style="text-align:center; justify-content:center; padding:40px; background:var(--bg);"><div class="success-circle">✓</div><h2 style="margin-bottom:12px;">ยื่นคำขอสำเร็จ!</h2><p style="color:var(--muted); margin-bottom:40px;">เราได้รับคำขอเรียบร้อยแล้ว<br>เจ้าหน้าที่จะแจ้งผลกลับในเร็วๆ นี้ค่ะ</p><button class="btn btn-primary" onclick="showView('view-chat')">ตกลง</button></div>
+
+            <!-- VIEW: STATUS DASHBOARD -->
+            <div id="view-status" class="app-view">
+                <div class="view-header"><button style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--fg);" onclick="showView('view-chat')">←</button><h2 style="margin:0;">ติดตามสถานะ</h2></div>
+                <div class="form-content">
+                    <div id="status-empty" style="text-align:center; padding-top:80px;"><div style="font-size:48px; margin-bottom:16px;">🔍</div><p style="color:var(--muted);">ไม่พบรายการคำขอในขณะนี้</p></div>
+                    <div id="status-content" style="display:none;">
+                        <div class="status-hero"><div class="status-badge">กำลังดำเนินการ</div><h2 style="margin:0; font-size:24px; color:var(--accent);">COOP-10294</h2></div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+                            <div class="summary-card"><div style="font-size:12px; color:var(--muted);">วงเงินขอกู้</div><div style="font-weight:800;" id="disp-amount">฿50,000</div></div>
+                            <div class="summary-card"><div style="font-size:12px; color:var(--muted);">ระยะเวลาผ่อน</div><div style="font-weight:800;" id="disp-term">24 งวด</div></div>
+                        </div>
+                        <div style="background:white; padding:24px; border-radius:24px; box-shadow:var(--shadow);">
+                            <div class="timeline">
+                                <div class="step done"><div class="step-icon">✓</div><div style="font-weight:800; font-size:14px;">ยื่นคำขอสำเร็จ</div><div style="font-size:12px; color:var(--muted);">08 พ.ค. 69</div></div>
+                                <div class="step current"><div class="step-icon">2</div><div style="font-weight:800; font-size:14px;">รอตรวจสอบเอกสาร</div><div style="font-size:12px; color:var(--muted);">เจ้าหน้าที่กำลังตรวจสอบเอกสารแนบ</div></div>
+                                <div class="step"><div class="step-icon">3</div><div style="font-weight:800; font-size:14px; opacity:0.4;">พิจารณาอนุมัติ</div></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" style="margin-top:24px; display:flex; align-items:center; justify-content:center; gap:8px;"><span>💬</span> ติดต่อเจ้าหน้าที่</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="home-indicator"></div>
+    </div>
+</div>
+
+<script>
+    let isVerified = false, isApplied = false;
+    let loanAmount = "50,000", loanTerm = "24";
+
+    function showView(viewId) {
+        document.querySelectorAll('.app-view').forEach(v => { v.classList.remove('active'); v.style.display = 'none'; });
+        const target = document.getElementById(viewId);
+        target.style.display = 'flex';
+        setTimeout(() => target.classList.add('active'), 10);
+        
+        if (viewId === 'view-status') {
+            document.getElementById('status-empty').style.display = isApplied ? 'none' : 'block';
+            document.getElementById('status-content').style.display = isApplied ? 'block' : 'none';
+            if (isApplied) {
+                document.getElementById('disp-amount').innerText = "฿" + Number(loanAmount).toLocaleString();
+                document.getElementById('disp-term').innerText = loanTerm + " งวด";
+            }
+        }
+    }
+
+    function handleLoanClick() {
+        const container = document.getElementById('chat-messages');
+        const userMsg = document.createElement('div');
+        userMsg.className = 'msg-row';
+        userMsg.innerHTML = '<div class="msg-user">ขอกู้สินเชื่อ</div>';
+        container.appendChild(userMsg);
+        container.scrollTop = container.scrollHeight;
+
+        if (isVerified) {
+            setTimeout(() => { showView('view-loan'); }, 600);
+        } else {
+            setTimeout(() => {
+                const warningBox = document.createElement('div');
+                warningBox.className = 'msg-row';
+                warningBox.innerHTML = `
+                    <div class="warning-box">
+                        <div class="warning-header"><span>⚠️</span><span>ยังไม่ได้ยืนยันตัวตน</span></div>
+                        <div style="font-size:14px; color:#444; line-height:1.5;">กรุณายืนยันตัวตนก่อนขอกู้สินเชื่อ เพื่อความปลอดภัยและรวดเร็วของสมาชิกนะคะ</div>
+                    </div>
+                `;
+                container.appendChild(warningBox);
+                container.scrollTop = container.scrollHeight;
+
+                setTimeout(() => {
+                    const actionCard = document.createElement('div');
+                    actionCard.className = 'msg-row';
+                    actionCard.innerHTML = `
+                        <div class="action-card">
+                            <div class="action-body">กดปุ่มด้านล่างเพื่อเริ่มยืนยันตัวตนผ่าน ThaiD ได้เลยค่ะ 🙏</div>
+                            <div class="action-btn" onclick="showView('view-verify')"><span>👤</span> ไปยืนยันตัวตน</div>
+                        </div>
+                    `;
+                    container.appendChild(actionCard);
+                    container.scrollTop = container.scrollHeight;
+                }, 800);
+            }, 600);
+        }
+    }
+
+    function startThaiD() {
+        document.getElementById('loading-text').innerText = "กำลังเชื่อมต่อ ThaiD";
+        showView('view-thaid');
+        setTimeout(() => {
+            isVerified = true;
+            document.getElementById('initial-instruction').innerHTML = '<div class="msg-bot">ยืนยันตัวตนสำเร็จแล้วค่ะ! ท่านสามารถเริ่มขอกู้สินเชื่อได้ทันทีค่ะ</div>';
+            showView('view-verify-success');
+        }, 2000);
+    }
+
+    function submitLoan() {
+        loanAmount = document.getElementById('loan-amount-input').value || "50,000";
+        loanTerm = document.getElementById('loan-term-input').value;
+        document.getElementById('loading-text').innerText = "กำลังส่งข้อมูลคำขอกู้";
+        showView('view-thaid');
+        setTimeout(() => { isApplied = true; showView('view-success'); }, 2500);
+    }
+</script>
+
+</body>
+</html>
