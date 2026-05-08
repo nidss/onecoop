@@ -159,159 +159,126 @@
         .success-circle { width: 80px; height: 80px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; margin: 0 auto 24px; }
 
         /* Face Scan View */
-        #view-face-scan { background: #a39e95; }
+        #view-face-scan { background: #2a2a2a; }
         .face-scan-header {
-            padding: 40px 24px 16px;
+            padding: 40px 24px 12px;
             display: flex;
             align-items: center;
             gap: 16px;
-            background: #fff;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
+            background: transparent;
+            position: relative;
+            z-index: 10;
         }
         .face-scan-header button {
             background: none;
             border: none;
-            font-size: 22px;
+            font-size: 28px;
             cursor: pointer;
-            color: #2c3e2d;
+            color: #fff;
             padding: 0;
-            font-weight: 700;
+            font-weight: 400;
         }
         .face-scan-header h2 {
             margin: 0;
-            color: #2c3e2d;
-            font-size: 18px;
-            font-weight: 800;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 700;
+            flex: 1;
+            text-align: center;
+            padding-right: 32px;
         }
+        .face-scan-hold-btn {
+            margin: 8px 24px 16px;
+            background: #6ba37b;
+            color: #fff;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 4px 16px rgba(107, 163, 123, 0.4);
+            position: relative;
+            z-index: 10;
+        }
+        /* Stage holds the fullscreen photo + oval mask + animations */
         .face-scan-stage {
             flex: 1;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             overflow: hidden;
-            background: #a39e95;
-            padding: 20px;
+            background-image: url('https://raw.githubusercontent.com/nidss/onecoop/main/validate_image.png');
+            background-size: cover;
+            background-position: center 30%;
+            background-repeat: no-repeat;
         }
-        /* Oval scan frame */
+        /* Dark overlay outside the oval - uses huge box-shadow trick */
         .face-oval {
-            position: relative;
-            width: 260px;
-            height: 340px;
-            background: #ffffff;
-            border: 3px solid #4a7c59;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 240px;
+            height: 320px;
+            border: 3px solid #6ba37b;
             border-radius: 50%;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+            z-index: 2;
         }
-        /* Person silhouette inside oval */
-        .face-silhouette {
-            width: 75%;
-            height: 70%;
-            position: relative;
-            margin-bottom: 0;
-        }
-        .face-silhouette::before {
-            /* Head */
+        /* Animated dashed pulsing ring around oval */
+        .face-oval::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 75px;
-            height: 80px;
-            background: #d8d8d4;
+            inset: -6px;
             border-radius: 50%;
+            border: 2px dashed rgba(107, 163, 123, 0.7);
+            animation: pulse-oval 2s ease-in-out infinite;
         }
-        .face-silhouette::after {
-            /* Shoulders/torso */
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 160px;
-            height: 90px;
-            background: #d8d8d4;
-            border-radius: 80px 80px 0 0;
+        @keyframes pulse-oval {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 0.2; }
         }
-        /* Animated scan line */
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent 0%, #4a7c59 20%, #6ba37b 50%, #4a7c59 80%, transparent 100%);
-            box-shadow: 0 0 16px 4px rgba(74, 124, 89, 0.6), 0 0 32px 8px rgba(107, 163, 123, 0.3);
-            animation: scan-move 2.4s ease-in-out infinite;
-            z-index: 3;
-        }
-        @keyframes scan-move {
-            0%, 100% { top: 6%; opacity: 1; }
-            50% { top: 92%; opacity: 1; }
-        }
-        /* Animated glow on the oval border */
+        /* Glowing scan line that travels inside the oval */
         .face-oval::after {
             content: '';
             position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            border: 3px solid #6ba37b;
-            opacity: 0.6;
-            animation: pulse-oval 2s ease-in-out infinite;
-            pointer-events: none;
+            top: 0;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, #6ba37b 30%, #b8e6c4 50%, #6ba37b 70%, transparent 100%);
+            box-shadow: 0 0 12px 3px rgba(107, 163, 123, 0.7), 0 0 24px 6px rgba(107, 163, 123, 0.3);
+            animation: scan-move 2.4s ease-in-out infinite;
+            z-index: 3;
+            border-radius: 2px;
         }
-        @keyframes pulse-oval {
-            0%, 100% { transform: scale(1); opacity: 0.5; box-shadow: 0 0 0 0 rgba(107, 163, 123, 0.5); }
-            50% { transform: scale(1.04); opacity: 0; box-shadow: 0 0 0 16px rgba(107, 163, 123, 0); }
+        @keyframes scan-move {
+            0%, 100% { top: 4%; opacity: 1; }
+            50% { top: 95%; opacity: 1; }
         }
-        /* Corner brackets that animate */
+        /* Corner brackets that pulse */
         .face-corners {
             position: absolute;
-            inset: -16px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 264px;
+            height: 344px;
             pointer-events: none;
+            z-index: 4;
         }
         .face-corner {
             position: absolute;
-            width: 24px;
-            height: 24px;
-            border: 3px solid #4a7c59;
+            width: 22px;
+            height: 22px;
+            border: 3px solid #6ba37b;
             animation: corner-pulse 1.6s ease-in-out infinite;
         }
-        .face-corner.tl { top: 8%; left: 4%; border-right: none; border-bottom: none; border-radius: 6px 0 0 0; }
-        .face-corner.tr { top: 8%; right: 4%; border-left: none; border-bottom: none; border-radius: 0 6px 0 0; }
-        .face-corner.bl { bottom: 8%; left: 4%; border-right: none; border-top: none; border-radius: 0 0 0 6px; }
-        .face-corner.br { bottom: 8%; right: 4%; border-left: none; border-top: none; border-radius: 0 0 6px 0; }
+        .face-corner.tl { top: 6%; left: 0; border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
+        .face-corner.tr { top: 6%; right: 0; border-left: none; border-bottom: none; border-radius: 0 4px 0 0; }
+        .face-corner.bl { bottom: 6%; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 4px; }
+        .face-corner.br { bottom: 6%; right: 0; border-left: none; border-top: none; border-radius: 0 0 4px 0; }
         @keyframes corner-pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(0.92); }
-        }
-        /* Caption text */
-        .face-scan-caption {
-            margin-top: 32px;
-            text-align: center;
-        }
-        .face-scan-caption .title {
-            font-size: 17px;
-            font-weight: 800;
-            color: #2c3e2d;
-            margin-bottom: 8px;
-        }
-        .face-scan-caption .subtitle {
-            font-size: 14px;
-            color: #4a7c59;
-            font-weight: 600;
-            opacity: 0.85;
-            animation: subtitle-fade 2s ease-in-out infinite;
-        }
-        @keyframes subtitle-fade {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
         }
     </style>
 </head>
@@ -341,23 +308,17 @@
             <!-- VIEW: FACE SCAN -->
             <div id="view-face-scan" class="app-view">
                 <div class="face-scan-header">
-                    <button onclick="showView('view-verify')">←</button>
+                    <button onclick="showView('view-verify')">‹</button>
                     <h2>สแกนใบหน้า</h2>
                 </div>
+                <div class="face-scan-hold-btn">ถือค้างไว้</div>
                 <div class="face-scan-stage">
-                    <div class="face-oval">
-                        <div class="face-silhouette"></div>
-                        <div class="scan-line"></div>
-                        <div class="face-corners">
-                            <div class="face-corner tl"></div>
-                            <div class="face-corner tr"></div>
-                            <div class="face-corner bl"></div>
-                            <div class="face-corner br"></div>
-                        </div>
-                    </div>
-                    <div class="face-scan-caption">
-                        <div class="title">กรุณาจัดใบหน้าให้อยู่ในกรอบ</div>
-                        <div class="subtitle">ขยับใบหน้าช้าๆ เพื่อวิเคราะห์ข้อมูล</div>
+                    <div class="face-oval"></div>
+                    <div class="face-corners">
+                        <div class="face-corner tl"></div>
+                        <div class="face-corner tr"></div>
+                        <div class="face-corner bl"></div>
+                        <div class="face-corner br"></div>
                     </div>
                 </div>
             </div>
