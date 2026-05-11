@@ -304,6 +304,34 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(0.92); }
         }
+
+        /* Review summary list */
+        .review-section { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 4px 16px; margin-bottom: 16px; }
+        .review-section-title { display: flex; align-items: center; gap: 8px; padding: 12px 0 8px; font-weight: 800; color: var(--accent); font-size: 13px; border-bottom: 1px dashed var(--border); margin-bottom: 4px; }
+        .review-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .review-row:last-child { border-bottom: none; }
+        .review-key { color: var(--muted); font-size: 13px; flex-shrink: 0; }
+        .review-val { color: var(--fg); font-size: 14px; font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
+        .review-val.highlight { color: var(--accent); font-weight: 800; font-size: 16px; }
+
+        /* eSign canvas */
+        .esign-info-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 14px; margin-bottom: 20px; display: flex; gap: 10px; align-items: flex-start; }
+        .esign-info-box .icon { font-size: 20px; flex-shrink: 0; }
+        .esign-info-box .text { font-size: 13px; color: #78532c; line-height: 1.5; }
+        .esign-doc-card { background: var(--accent-soft); border: 1px solid var(--accent-light); border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; display: flex; gap: 12px; align-items: center; }
+        .esign-doc-card .doc-icon { font-size: 32px; }
+        .esign-doc-card .doc-title { font-weight: 800; color: var(--accent); font-size: 14px; }
+        .esign-doc-card .doc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+        .signature-pad-wrap { position: relative; background: #fff; border: 2px dashed var(--accent); border-radius: 12px; overflow: hidden; margin-bottom: 8px; }
+        .signature-pad { display: block; width: 100%; height: 180px; touch-action: none; cursor: crosshair; background: #fff; }
+        .signature-placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #bdbdbd; font-size: 13px; pointer-events: none; user-select: none; }
+        .signature-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 13px; }
+        .signature-clear { color: var(--muted); cursor: pointer; font-weight: 600; padding: 6px 12px; }
+        .signature-clear:active { color: var(--accent); }
+        .esign-consent { display: flex; gap: 10px; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; cursor: pointer; }
+        .esign-consent input { margin-top: 3px; flex-shrink: 0; accent-color: var(--accent); width: 18px; height: 18px; }
+        .esign-consent label { font-size: 13px; color: var(--fg); line-height: 1.5; cursor: pointer; }
+        .btn.btn-primary:disabled { background: #c8d6cd; box-shadow: none; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -364,20 +392,20 @@
                         <div style="font-weight:800; color:var(--accent); font-size:14px;">เงินกู้สมาชิกสหกรณ์ออมทรัพย์ข้าราชการฝ่ายรัฐสภา</div>
                     </div>
 
-                    <div class="form-group"><label class="label">ประเภทเงินกู้</label><select class="input"><option>เงินกู้สามัญ</option><option>เงินกู้ฉุกเฉิน</option><option>เงินกู้เพื่อสวัสดิการ</option></select></div>
+                    <div class="form-group"><label class="label">ประเภทเงินกู้</label><select id="loan-type-input" class="input"><option>เงินกู้สามัญ</option><option>เงินกู้ฉุกเฉิน</option><option>เงินกู้เพื่อสวัสดิการ</option></select></div>
                     <div class="form-group"><label class="label">วงเงินที่ต้องการกู้ (บาท)</label><input type="number" id="loan-amount-input" class="input" placeholder="ระบุจำนวนเงิน"></div>
                     <div class="form-group"><label class="label">ระยะเวลาผ่อนชำระ</label><select id="loan-term-input" class="input"><option value="12">12 งวด (1 ปี)</option><option value="24">24 งวด (2 ปี)</option><option value="36">36 งวด (3 ปี)</option><option value="48">48 งวด (4 ปี)</option></select></div>
-                    <div class="form-group"><label class="label">วัตถุประสงค์การกู้</label><input class="input" placeholder="เช่น ซ่อมแซมบ้าน / ทุนการศึกษา"></div>
-                    <div class="form-group"><label class="label">รายได้ต่อเดือน (บาท)</label><input type="number" class="input" placeholder="ระบุรายได้รวม"></div>
-                    <div class="form-group"><label class="label">อาชีพ</label><input class="input" placeholder="ระบุอาชีพปัจจุบัน"></div>
-                    <div class="form-group"><label class="label">สถานที่ทำงาน</label><input class="input" placeholder="ระบุชื่อหน่วยงาน/บริษัท"></div>
+                    <div class="form-group"><label class="label">วัตถุประสงค์การกู้</label><input id="loan-purpose-input" class="input" placeholder="เช่น ซ่อมแซมบ้าน / ทุนการศึกษา"></div>
+                    <div class="form-group"><label class="label">รายได้ต่อเดือน (บาท)</label><input type="number" id="loan-income-input" class="input" placeholder="ระบุรายได้รวม"></div>
+                    <div class="form-group"><label class="label">อาชีพ</label><input id="loan-occupation-input" class="input" placeholder="ระบุอาชีพปัจจุบัน"></div>
+                    <div class="form-group"><label class="label">สถานที่ทำงาน</label><input id="loan-workplace-input" class="input" placeholder="ระบุชื่อหน่วยงาน/บริษัท"></div>
                     
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                        <div class="form-group"><label class="label">เบอร์โทรศัพท์</label><input type="tel" class="input" placeholder="08x-xxxxxxx"></div>
-                        <div class="form-group"><label class="label">อีเมล</label><input type="email" class="input" placeholder="name@mail.com"></div>
+                        <div class="form-group"><label class="label">เบอร์โทรศัพท์</label><input type="tel" id="loan-phone-input" class="input" placeholder="08x-xxxxxxx"></div>
+                        <div class="form-group"><label class="label">อีเมล</label><input type="email" id="loan-email-input" class="input" placeholder="name@mail.com"></div>
                     </div>
 
-                    <div class="form-group"><label class="label">ที่อยู่ปัจจุบัน</label><textarea class="input" style="height:80px; resize:none;" placeholder="บ้านเลขที่, ถนน, ตำบล/แขวง..."></textarea></div>
+                    <div class="form-group"><label class="label">ที่อยู่ปัจจุบัน</label><textarea id="loan-address-input" class="input" style="height:80px; resize:none;" placeholder="บ้านเลขที่, ถนน, ตำบล/แขวง..."></textarea></div>
 
                     <div class="form-group">
                         <label class="label">แนบหลักฐานเอกสาร (สลิปเงินเดือน / สำเนาบัตร)</label>
@@ -388,12 +416,83 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-primary" style="margin-top:12px;" onclick="submitLoan()">ส่งคำขอกู้สินเชื่อ</button>
+                    <button class="btn btn-primary" style="margin-top:12px;" onclick="goToReview()">ตรวจสอบข้อมูล</button>
                     <button class="btn" style="margin-top:12px; color:var(--muted);" onclick="showView('view-chat')">ยกเลิก</button>
                 </div>
             </div>
 
             <!-- VIEW: THAID/LOADING -->
+            <!-- VIEW: REVIEW (ตรวจสอบข้อมูล) -->
+            <div id="view-review" class="app-view">
+                <div class="view-header"><button style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--fg);" onclick="showView('view-loan')">←</button><h2 style="margin:0;">ตรวจสอบข้อมูล</h2></div>
+                <div class="form-content">
+                    <p style="color:var(--muted); margin-bottom:20px; font-size:13px;">โปรดตรวจสอบความถูกต้องของข้อมูลก่อนดำเนินการเซ็นเอกสาร</p>
+
+                    <div class="review-section">
+                        <div class="review-section-title"><span>💰</span><span>รายละเอียดเงินกู้</span></div>
+                        <div class="review-row"><span class="review-key">ประเภทเงินกู้</span><span class="review-val" id="rv-type">-</span></div>
+                        <div class="review-row"><span class="review-key">วงเงินที่ขอกู้</span><span class="review-val highlight" id="rv-amount">-</span></div>
+                        <div class="review-row"><span class="review-key">ระยะเวลาผ่อน</span><span class="review-val" id="rv-term">-</span></div>
+                        <div class="review-row"><span class="review-key">วัตถุประสงค์</span><span class="review-val" id="rv-purpose">-</span></div>
+                    </div>
+
+                    <div class="review-section">
+                        <div class="review-section-title"><span>👤</span><span>ข้อมูลผู้กู้</span></div>
+                        <div class="review-row"><span class="review-key">รายได้/เดือน</span><span class="review-val" id="rv-income">-</span></div>
+                        <div class="review-row"><span class="review-key">อาชีพ</span><span class="review-val" id="rv-occupation">-</span></div>
+                        <div class="review-row"><span class="review-key">สถานที่ทำงาน</span><span class="review-val" id="rv-workplace">-</span></div>
+                    </div>
+
+                    <div class="review-section">
+                        <div class="review-section-title"><span>📞</span><span>ข้อมูลติดต่อ</span></div>
+                        <div class="review-row"><span class="review-key">เบอร์โทรศัพท์</span><span class="review-val" id="rv-phone">-</span></div>
+                        <div class="review-row"><span class="review-key">อีเมล</span><span class="review-val" id="rv-email">-</span></div>
+                        <div class="review-row"><span class="review-key">ที่อยู่</span><span class="review-val" id="rv-address">-</span></div>
+                    </div>
+
+                    <button class="btn btn-primary" style="margin-top:8px;" onclick="goToEsign()">ยืนยันและเซ็นเอกสาร</button>
+                    <button class="btn btn-outline" style="margin-top:12px;" onclick="showView('view-loan')">แก้ไขข้อมูล</button>
+                </div>
+            </div>
+
+            <!-- VIEW: eSIGN (เซ็นเอกสาร) -->
+            <div id="view-esign" class="app-view">
+                <div class="view-header"><button style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--fg);" onclick="showView('view-review')">←</button><h2 style="margin:0;">เซ็นเอกสาร (eSign)</h2></div>
+                <div class="form-content">
+                    <div class="esign-doc-card">
+                        <div class="doc-icon">📄</div>
+                        <div style="flex:1;">
+                            <div class="doc-title">สัญญาเงินกู้สหกรณ์</div>
+                            <div class="doc-meta">เลขที่สัญญา: COOP-<span id="esign-contract-no">XXXX</span> · <span id="esign-date">-</span></div>
+                        </div>
+                    </div>
+
+                    <div class="esign-info-box">
+                        <span class="icon">ℹ️</span>
+                        <div class="text">การลงลายมือชื่ออิเล็กทรอนิกส์นี้ มีผลผูกพันทางกฎหมายเทียบเท่าการลงลายมือชื่อบนเอกสารกระดาษ ตาม พ.ร.บ. ว่าด้วยธุรกรรมทางอิเล็กทรอนิกส์</div>
+                    </div>
+
+                    <label class="label">ลงลายมือชื่อในกรอบด้านล่าง</label>
+                    <div class="signature-pad-wrap">
+                        <canvas id="signature-pad" class="signature-pad"></canvas>
+                        <div class="signature-placeholder" id="signature-placeholder">เซ็นชื่อด้วยนิ้วมือหรือเมาส์ที่นี่</div>
+                    </div>
+                    <div class="signature-actions">
+                        <span style="color:var(--muted); font-size:12px;" id="signature-status">ยังไม่ได้เซ็น</span>
+                        <span class="signature-clear" onclick="clearSignature()">↻ ล้าง</span>
+                    </div>
+
+                    <div class="esign-consent" onclick="toggleConsent(event)">
+                        <input type="checkbox" id="esign-consent-check" onchange="updateEsignButton()">
+                        <label for="esign-consent-check">ข้าพเจ้ายอมรับ<b>เงื่อนไขสัญญา</b>และยินยอมให้สหกรณ์ใช้ข้อมูลเพื่อพิจารณาคำขอกู้</label>
+                    </div>
+
+                    <button id="esign-submit-btn" class="btn btn-primary" style="margin-top:8px;" onclick="submitEsign()" disabled>ยืนยันส่งคำขอ</button>
+                    <button class="btn" style="margin-top:12px; color:var(--muted);" onclick="showView('view-review')">ย้อนกลับ</button>
+                </div>
+            </div>
+
+            <!-- VIEW: LOADING -->
             <div id="view-thaid" class="app-view" style="text-align:center; justify-content:center; align-items:center; padding:40px; background:var(--bg);">
                 <img src="https://raw.githubusercontent.com/nidss/onecoop/main/loading_thaid.png" alt="ThaiD" id="thaid-loading-img" style="width:140px; height:auto; margin-bottom:32px; animation: thaid-float 2s ease-in-out infinite;">
                 <div class="spinner" style="margin: 0 auto 24px;"></div>
@@ -506,13 +605,152 @@
         }, 1500);
     }
 
-    function submitLoan() {
-        loanAmount = document.getElementById('loan-amount-input').value || "50,000";
-        loanTerm = document.getElementById('loan-term-input').value;
+    // === flow ใหม่: form → review → eSign → loading → success ===
+    
+    const LOAN_TYPE_LABELS = {}; // ใช้ค่าตรงจาก option
+    
+    function fmtMoney(v) {
+        if (!v) return '-';
+        const n = Number(String(v).replace(/,/g, ''));
+        if (Number.isNaN(n) || n === 0) return '-';
+        return '฿' + n.toLocaleString();
+    }
+    function valOrDash(s) { return (s && s.trim()) ? s.trim() : '-'; }
+
+    function goToReview() {
+        // capture form values into review screen
+        const type = document.getElementById('loan-type-input').value;
+        const amount = document.getElementById('loan-amount-input').value;
+        const termSel = document.getElementById('loan-term-input');
+        const termText = termSel.options[termSel.selectedIndex].text;
+        const purpose = document.getElementById('loan-purpose-input').value;
+        const income = document.getElementById('loan-income-input').value;
+        const occupation = document.getElementById('loan-occupation-input').value;
+        const workplace = document.getElementById('loan-workplace-input').value;
+        const phone = document.getElementById('loan-phone-input').value;
+        const email = document.getElementById('loan-email-input').value;
+        const address = document.getElementById('loan-address-input').value;
+
+        document.getElementById('rv-type').innerText = valOrDash(type);
+        document.getElementById('rv-amount').innerText = fmtMoney(amount);
+        document.getElementById('rv-term').innerText = termText;
+        document.getElementById('rv-purpose').innerText = valOrDash(purpose);
+        document.getElementById('rv-income').innerText = fmtMoney(income);
+        document.getElementById('rv-occupation').innerText = valOrDash(occupation);
+        document.getElementById('rv-workplace').innerText = valOrDash(workplace);
+        document.getElementById('rv-phone').innerText = valOrDash(phone);
+        document.getElementById('rv-email').innerText = valOrDash(email);
+        document.getElementById('rv-address').innerText = valOrDash(address);
+
+        // save amount + term เพื่อให้หน้า status ใช้ต่อ
+        loanAmount = amount || "50,000";
+        loanTerm = termSel.value;
+
+        showView('view-review');
+    }
+
+    function goToEsign() {
+        // ตั้งค่า meta ของเอกสาร
+        document.getElementById('esign-contract-no').innerText = Math.floor(10000 + Math.random() * 89999);
+        const now = new Date();
+        const thaiMonths = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+        document.getElementById('esign-date').innerText = `${now.getDate()} ${thaiMonths[now.getMonth()]} ${(now.getFullYear() + 543) % 100}`;
+        // reset signature state
+        clearSignature();
+        document.getElementById('esign-consent-check').checked = false;
+        updateEsignButton();
+        showView('view-esign');
+        // ต้อง init pad หลัง view เปิดเพื่อให้ได้ขนาด canvas จริง
+        setTimeout(initSignaturePad, 100);
+    }
+
+    function toggleConsent(e) {
+        if (e.target.tagName === 'LABEL' || e.target.tagName === 'B') return; // label คลิกเองอยู่แล้ว
+        if (e.target.tagName === 'INPUT') return;
+        const cb = document.getElementById('esign-consent-check');
+        cb.checked = !cb.checked;
+        updateEsignButton();
+    }
+
+    // === Signature pad ===
+    let sigCtx = null, sigCanvas = null, sigDrawing = false, sigHasInk = false;
+    function initSignaturePad() {
+        sigCanvas = document.getElementById('signature-pad');
+        if (!sigCanvas) return;
+        const rect = sigCanvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        sigCanvas.width = rect.width * dpr;
+        sigCanvas.height = rect.height * dpr;
+        sigCtx = sigCanvas.getContext('2d');
+        sigCtx.scale(dpr, dpr);
+        sigCtx.strokeStyle = '#1a1a1a';
+        sigCtx.lineWidth = 2.2;
+        sigCtx.lineCap = 'round';
+        sigCtx.lineJoin = 'round';
+        // bind events (idempotent: replace existing)
+        sigCanvas.onpointerdown = sigStart;
+        sigCanvas.onpointermove = sigMove;
+        sigCanvas.onpointerup   = sigEnd;
+        sigCanvas.onpointerleave= sigEnd;
+        sigCanvas.onpointercancel= sigEnd;
+    }
+    function sigPos(e) {
+        const rect = sigCanvas.getBoundingClientRect();
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+    function sigStart(e) {
+        e.preventDefault();
+        sigCanvas.setPointerCapture(e.pointerId);
+        sigDrawing = true;
+        const p = sigPos(e);
+        sigCtx.beginPath();
+        sigCtx.moveTo(p.x, p.y);
+        if (!sigHasInk) {
+            sigHasInk = true;
+            document.getElementById('signature-placeholder').style.display = 'none';
+            document.getElementById('signature-status').innerText = '✓ เซ็นแล้ว';
+            document.getElementById('signature-status').style.color = 'var(--accent)';
+            updateEsignButton();
+        }
+    }
+    function sigMove(e) {
+        if (!sigDrawing) return;
+        const p = sigPos(e);
+        sigCtx.lineTo(p.x, p.y);
+        sigCtx.stroke();
+    }
+    function sigEnd(e) {
+        if (!sigDrawing) return;
+        sigDrawing = false;
+        try { sigCanvas.releasePointerCapture(e.pointerId); } catch(err){}
+    }
+    function clearSignature() {
+        if (sigCtx && sigCanvas) {
+            sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+        }
+        sigHasInk = false;
+        const ph = document.getElementById('signature-placeholder');
+        if (ph) ph.style.display = '';
+        const st = document.getElementById('signature-status');
+        if (st) { st.innerText = 'ยังไม่ได้เซ็น'; st.style.color = 'var(--muted)'; }
+        updateEsignButton();
+    }
+    function updateEsignButton() {
+        const consent = document.getElementById('esign-consent-check').checked;
+        const btn = document.getElementById('esign-submit-btn');
+        btn.disabled = !(sigHasInk && consent);
+    }
+
+    function submitEsign() {
         document.getElementById('loading-text').innerText = "กำลังส่งข้อมูลคำขอกู้";
         document.getElementById('thaid-loading-img').style.display = 'none';
         showView('view-thaid');
         setTimeout(() => { isApplied = true; showView('view-success'); }, 2500);
+    }
+
+    function submitLoan() {
+        // คงไว้เผื่อมี reference เก่า แต่ไม่ใช้ใน flow ใหม่ — เรียก review แทน
+        goToReview();
     }
 </script>
 
