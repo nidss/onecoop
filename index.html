@@ -118,20 +118,21 @@
         .action-body { padding: 16px; font-size: 15px; line-height: 1.4; color: var(--fg); }
         .action-btn { background: #4a7c59; color: white; padding: 16px; text-align: center; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-        /* Rich Menu - รูปเดียวรวม banner + 3 ปุ่ม พร้อม tap areas ซ้อนทับ */
+        /* Rich Menu - รูปเดียวรวม banner + 4 ปุ่ม พร้อม tap areas ซ้อนทับ */
         .rich-menu-container {
             background: #fff;
             padding: 0;
             position: relative;
-            aspect-ratio: 2500 / 1200; /* ขนาดมาตรฐาน LINE Rich Menu Custom */
+            aspect-ratio: 2500 / 1200; /* ตามขนาดรูปจริง */
             width: 100%;
-            background-image: url('https://raw.githubusercontent.com/nidss/onecoop/main/rich_menu01.jpg');
+            background-image: url('https://raw.githubusercontent.com/nidss/onecoop/main/rich.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }
-        /* Tap areas ซ้อนทับเป็นเปอร์เซ็นต์ของ container เพื่อ scale ตามจอ
-           Layout: banner เต็มความกว้างด้านบน (สูง ~58%), 3 ปุ่มแถวล่าง (สูง ~42%) */
+        /* Tap areas:
+           แถวบน (สูง 50%): banner ซ้าย 2/3 + ยืนยันตัวตน ขวา 1/3
+           แถวล่าง (สูง 50%): 3 ปุ่มเท่ากัน — ขอกู้ / ติดตามสถานะ / ชำระเงิน */
         .rich-tap {
             position: absolute;
             cursor: pointer;
@@ -142,10 +143,11 @@
             transition: background 0.12s ease;
         }
         .rich-tap:active { background: rgba(255, 255, 255, 0.18); }
-        .rich-tap.banner  { top: 0;        left: 0;        width: 100%;     height: 58.33%; }
-        .rich-tap.btn-1   { top: 58.33%;   left: 0;        width: 33.33%;   height: 41.67%; }
-        .rich-tap.btn-2   { top: 58.33%;   left: 33.33%;   width: 33.33%;   height: 41.67%; }
-        .rich-tap.btn-3   { top: 58.33%;   left: 66.66%;   width: 33.34%;   height: 41.67%; }
+        .rich-tap.banner  { top: 0;    left: 0;      width: 66.67%;   height: 50%; }
+        .rich-tap.verify  { top: 0;    left: 66.67%; width: 33.33%;   height: 50%; }
+        .rich-tap.btn-1   { top: 50%;  left: 0;      width: 33.33%;   height: 50%; }
+        .rich-tap.btn-2   { top: 50%;  left: 33.33%; width: 33.33%;   height: 50%; }
+        .rich-tap.btn-3   { top: 50%;  left: 66.66%; width: 33.34%;   height: 50%; }
 
         /* Forms & Status View */
         .view-header { padding: 40px 24px 12px; background: var(--bg); display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--border); }
@@ -332,6 +334,66 @@
         .esign-consent input { margin-top: 3px; flex-shrink: 0; accent-color: var(--accent); width: 18px; height: 18px; }
         .esign-consent label { font-size: 13px; color: var(--fg); line-height: 1.5; cursor: pointer; }
         .btn.btn-primary:disabled { background: #c8d6cd; box-shadow: none; cursor: not-allowed; }
+
+        /* Payment views */
+        .pay-summary { background: linear-gradient(135deg, var(--accent) 0%, #6ba37b 100%); color: #fff; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 6px 16px rgba(74,124,89,0.25); }
+        .pay-summary .label { color: rgba(255,255,255,0.85); font-size: 13px; }
+        .pay-summary .amount { font-size: 32px; font-weight: 900; margin-top: 4px; letter-spacing: -0.5px; }
+        .pay-summary .meta { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.25); font-size: 12px; }
+        .pay-summary .meta b { display: block; font-size: 14px; margin-top: 2px; }
+
+        .installment-list-title { font-weight: 800; font-size: 14px; color: var(--fg); margin: 4px 4px 12px; display: flex; justify-content: space-between; align-items: baseline; }
+        .installment-list-title .sub { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+        .install-card { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.15s; }
+        .install-card:active { transform: scale(0.98); }
+        .install-card.selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 4px 12px rgba(74,124,89,0.12); }
+        .install-card.overdue { border-color: #fca5a5; }
+        .install-card.overdue.selected { border-color: #ef4444; background: #fef2f2; }
+        .install-checkbox { width: 22px; height: 22px; border: 2px solid #c8c8c8; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 800; transition: all 0.15s; }
+        .install-card.selected .install-checkbox { background: var(--accent); border-color: var(--accent); }
+        .install-card.overdue.selected .install-checkbox { background: #ef4444; border-color: #ef4444; }
+        .install-info { flex: 1; min-width: 0; }
+        .install-period { font-weight: 800; font-size: 14px; color: var(--fg); }
+        .install-due { font-size: 11px; color: var(--muted); margin-top: 2px; }
+        .install-due.overdue-text { color: #dc2626; font-weight: 700; }
+        .install-amount { font-weight: 800; color: var(--accent); font-size: 15px; text-align: right; flex-shrink: 0; }
+        .install-card.overdue .install-amount { color: #dc2626; }
+
+        .pay-total-bar { position: sticky; bottom: 0; background: #fff; margin: 16px -24px -24px; padding: 16px 24px 20px; border-top: 1px solid var(--border); box-shadow: 0 -4px 16px rgba(0,0,0,0.04); }
+        .pay-total-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+        .pay-total-row .label { color: var(--muted); font-size: 13px; }
+        .pay-total-row .value { font-weight: 900; font-size: 22px; color: var(--accent); }
+
+        /* QR view */
+        .qr-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 24px; text-align: center; box-shadow: var(--shadow); margin-bottom: 16px; }
+        .qr-promptpay-logo { background: linear-gradient(135deg, #003874 0%, #00529b 100%); color: #fff; padding: 10px 20px; border-radius: 8px; display: inline-block; font-weight: 900; letter-spacing: 1px; font-size: 14px; margin-bottom: 16px; }
+        .qr-code-box { width: 100%; max-width: 240px; aspect-ratio: 1/1; margin: 0 auto 16px; padding: 12px; background: #fff; border: 2px solid var(--fg); border-radius: 12px; position: relative; overflow: hidden; }
+        .qr-code-box svg { width: 100%; height: 100%; display: block; }
+        .qr-amount-display { font-size: 28px; font-weight: 900; color: var(--fg); }
+        .qr-amount-display .baht { font-size: 18px; color: var(--muted); font-weight: 700; margin-right: 4px; }
+        .qr-payee { font-size: 13px; color: var(--muted); margin-top: 4px; }
+        .qr-countdown { background: #fef3c7; color: #92400e; padding: 10px 14px; border-radius: 10px; text-align: center; font-size: 13px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .qr-instructions { background: var(--accent-soft); padding: 14px; border-radius: 12px; margin-bottom: 16px; font-size: 12px; color: var(--fg); line-height: 1.7; }
+        .qr-instructions ol { margin: 6px 0 0; padding-left: 22px; }
+        .qr-instructions ol li { margin-bottom: 2px; }
+
+        /* Receipt (slip) */
+        .slip-card { background: #fff; border-radius: 16px; padding: 24px 20px; box-shadow: var(--shadow); margin-bottom: 20px; position: relative; }
+        .slip-card::before, .slip-card::after { content: ''; position: absolute; width: 20px; height: 20px; background: var(--bg); border-radius: 50%; top: 50%; transform: translateY(-50%); }
+        .slip-card::before { left: -10px; }
+        .slip-card::after { right: -10px; }
+        .slip-header { text-align: center; padding-bottom: 16px; border-bottom: 1.5px dashed var(--border); margin-bottom: 16px; }
+        .slip-header .check-mini { width: 56px; height: 56px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; margin: 0 auto 10px; }
+        .slip-header .title { font-weight: 800; font-size: 16px; color: var(--fg); }
+        .slip-header .subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+        .slip-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; font-size: 13px; }
+        .slip-row .k { color: var(--muted); }
+        .slip-row .v { color: var(--fg); font-weight: 700; text-align: right; max-width: 60%; word-break: break-word; }
+        .slip-divider { height: 1px; border-top: 1.5px dashed var(--border); margin: 10px 0; }
+        .slip-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 2px solid var(--fg); margin-top: 8px; }
+        .slip-total .k { font-weight: 800; color: var(--fg); }
+        .slip-total .v { font-weight: 900; font-size: 22px; color: var(--accent); }
     </style>
 </head>
 <body>
@@ -349,9 +411,10 @@
                 <div class="messages" id="chat-messages"><div class="msg-row"><div class="msg-bot">สวัสดีค่ะ ยินดีต้อนรับสู่บริการสหกรณ์ออมทรัพย์ข้าราชการฝ่ายรัฐสภาออนไลน์ค่ะ</div></div><div class="msg-row" id="initial-instruction"><div class="msg-bot">กรุณายืนยันตัวตนก่อนทำรายการขอกู้สินเชื่อนะคะ</div></div></div>
                 <div class="rich-menu-container">
                     <button class="rich-tap banner" onclick="handleLoanClick()" aria-label="กู้ง่าย ได้ไว - คำนวณวงเงินกู้"></button>
-                    <button class="rich-tap btn-1" onclick="showView('view-verify')" aria-label="ยืนยันตัวตน"></button>
-                    <button class="rich-tap btn-2" onclick="handleLoanClick()" aria-label="ขอกู้สินเชื่อ"></button>
-                    <button class="rich-tap btn-3" onclick="showView('view-status')" aria-label="ติดตามสถานะ"></button>
+                    <button class="rich-tap verify" onclick="showView('view-verify')" aria-label="ยืนยันตัวตน"></button>
+                    <button class="rich-tap btn-1" onclick="handleLoanClick()" aria-label="ขอกู้สินเชื่อ"></button>
+                    <button class="rich-tap btn-2" onclick="showView('view-status')" aria-label="ติดตามสถานะ"></button>
+                    <button class="rich-tap btn-3" onclick="handlePayment()" aria-label="ชำระเงิน"></button>
                 </div>
                 <div style="background:white; height:40px; display:flex; align-items:center; justify-content:center; border-top:1px solid var(--border); font-size:13px; color:#777;">เมนู</div>
             </div>
@@ -503,6 +566,129 @@
             <!-- VIEW: SUCCESS -->
             <div id="view-success" class="app-view" style="text-align:center; justify-content:center; padding:40px; background:var(--bg);"><div class="success-circle">✓</div><h2 style="margin-bottom:12px;">ยื่นคำขอสำเร็จ!</h2><p style="color:var(--muted); margin-bottom:40px;">เราได้รับคำขอเรียบร้อยแล้ว<br>เจ้าหน้าที่จะแจ้งผลกลับในเร็วๆ นี้ค่ะ</p><button class="btn btn-primary" onclick="showView('view-chat')">ตกลง</button></div>
 
+            <!-- VIEW: PAYMENT - LIST รายการค้างชำระ -->
+            <div id="view-payment" class="app-view">
+                <div class="view-header"><button style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--fg);" onclick="showView('view-chat')">←</button><h2 style="margin:0;">ชำระเงินกู้</h2></div>
+                <div class="form-content">
+                    <div class="pay-summary">
+                        <div class="label">ยอดคงเหลือทั้งหมด</div>
+                        <div class="amount">฿42,580.00</div>
+                        <div class="meta">
+                            <div>เลขสัญญา<b>COOP-10294</b></div>
+                            <div style="text-align:right;">เหลือ<b>18 งวด</b></div>
+                        </div>
+                    </div>
+
+                    <div class="installment-list-title">
+                        <span>รายการค้างชำระ</span>
+                        <span class="sub" id="pay-selected-count">เลือก 0 รายการ</span>
+                    </div>
+
+                    <div id="installment-list">
+                        <!-- ค้างชำระ (overdue) -->
+                        <div class="install-card overdue" onclick="toggleInstallment(this)" data-amount="2365" data-period="งวด เม.ย. 68">
+                            <div class="install-checkbox">✓</div>
+                            <div class="install-info">
+                                <div class="install-period">งวด เม.ย. 68</div>
+                                <div class="install-due overdue-text">⚠ เกินกำหนด · ครบกำหนด 30 เม.ย. 68</div>
+                            </div>
+                            <div class="install-amount">฿2,365</div>
+                        </div>
+                        <!-- งวดปัจจุบัน -->
+                        <div class="install-card" onclick="toggleInstallment(this)" data-amount="2365" data-period="งวด พ.ค. 68">
+                            <div class="install-checkbox">✓</div>
+                            <div class="install-info">
+                                <div class="install-period">งวด พ.ค. 68</div>
+                                <div class="install-due">ครบกำหนด 31 พ.ค. 68</div>
+                            </div>
+                            <div class="install-amount">฿2,365</div>
+                        </div>
+                        <!-- งวดถัดไป (ล่วงหน้า/โปะ) -->
+                        <div class="install-card" onclick="toggleInstallment(this)" data-amount="2365" data-period="งวด มิ.ย. 68">
+                            <div class="install-checkbox">✓</div>
+                            <div class="install-info">
+                                <div class="install-period">งวด มิ.ย. 68</div>
+                                <div class="install-due">ครบกำหนด 30 มิ.ย. 68</div>
+                            </div>
+                            <div class="install-amount">฿2,365</div>
+                        </div>
+                        <div class="install-card" onclick="toggleInstallment(this)" data-amount="2365" data-period="งวด ก.ค. 68">
+                            <div class="install-checkbox">✓</div>
+                            <div class="install-info">
+                                <div class="install-period">งวด ก.ค. 68</div>
+                                <div class="install-due">ครบกำหนด 31 ก.ค. 68</div>
+                            </div>
+                            <div class="install-amount">฿2,365</div>
+                        </div>
+                    </div>
+
+                    <div class="pay-total-bar">
+                        <div class="pay-total-row">
+                            <span class="label">ยอดรวมที่ชำระ</span>
+                            <span class="value" id="pay-total-amount">฿0</span>
+                        </div>
+                        <button id="pay-proceed-btn" class="btn btn-primary" onclick="goToPaymentQR()" disabled>ชำระด้วย QR PromptPay</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: PAYMENT QR -->
+            <div id="view-payment-qr" class="app-view">
+                <div class="view-header"><button style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--fg);" onclick="showView('view-payment')">←</button><h2 style="margin:0;">สแกนเพื่อชำระเงิน</h2></div>
+                <div class="form-content">
+                    <div class="qr-countdown">
+                        <span>⏱</span>
+                        <span>QR หมดอายุใน <span id="qr-timer">14:59</span> นาที</span>
+                    </div>
+
+                    <div class="qr-card">
+                        <div class="qr-promptpay-logo">Thai QR Payment</div>
+                        <div class="qr-code-box" id="qr-code-container">
+                            <!-- SVG QR วาดด้วย JS -->
+                        </div>
+                        <div class="qr-amount-display"><span class="baht">฿</span><span id="qr-amount-text">0</span></div>
+                        <div class="qr-payee">สหกรณ์ออมทรัพย์ข้าราชการฝ่ายรัฐสภา</div>
+                    </div>
+
+                    <div class="qr-instructions">
+                        <b>วิธีชำระเงิน:</b>
+                        <ol>
+                            <li>เปิดแอปธนาคาร / Mobile Banking</li>
+                            <li>เลือกเมนู "สแกน QR"</li>
+                            <li>สแกน QR ด้านบนแล้วยืนยันการชำระเงิน</li>
+                        </ol>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="confirmPayment()">ฉันชำระเงินเรียบร้อยแล้ว</button>
+                    <button class="btn" style="margin-top:12px; color:var(--muted);" onclick="showView('view-payment')">ยกเลิก</button>
+                </div>
+            </div>
+
+            <!-- VIEW: PAYMENT SUCCESS / SLIP -->
+            <div id="view-payment-success" class="app-view">
+                <div class="view-header"><button style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--fg);" onclick="showView('view-chat')">←</button><h2 style="margin:0;">ใบเสร็จรับเงิน</h2></div>
+                <div class="form-content">
+                    <div class="slip-card">
+                        <div class="slip-header">
+                            <div class="check-mini">✓</div>
+                            <div class="title">ชำระเงินสำเร็จ</div>
+                            <div class="subtitle" id="slip-datetime">-</div>
+                        </div>
+                        <div class="slip-row"><span class="k">เลขที่อ้างอิง</span><span class="v" id="slip-ref">-</span></div>
+                        <div class="slip-row"><span class="k">เลขสัญญา</span><span class="v">COOP-10294</span></div>
+                        <div class="slip-row"><span class="k">ช่องทาง</span><span class="v">QR PromptPay</span></div>
+                        <div class="slip-divider"></div>
+                        <div class="slip-row"><span class="k">รายการชำระ</span><span class="v" id="slip-items">-</span></div>
+                        <div class="slip-total">
+                            <span class="k">ยอดที่ชำระ</span>
+                            <span class="v" id="slip-total">-</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="showView('view-chat')">เสร็จสิ้น</button>
+                    <button class="btn btn-outline" style="margin-top:12px;" onclick="showView('view-payment')">ชำระเพิ่ม</button>
+                </div>
+            </div>
+
             <!-- VIEW: STATUS DASHBOARD -->
             <div id="view-status" class="app-view">
                 <div class="view-header"><button style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--fg);" onclick="showView('view-chat')">←</button><h2 style="margin:0;">ติดตามสถานะ</h2></div>
@@ -549,6 +735,123 @@
                 document.getElementById('disp-term').innerText = loanTerm + " งวด";
             }
         }
+    }
+
+    function handlePayment() {
+        showView('view-payment');
+    }
+
+    // === Payment flow ===
+    let paymentTimer = null;
+
+    function toggleInstallment(card) {
+        card.classList.toggle('selected');
+        updatePaymentTotal();
+    }
+
+    function updatePaymentTotal() {
+        const selected = document.querySelectorAll('#installment-list .install-card.selected');
+        let total = 0;
+        selected.forEach(c => { total += Number(c.dataset.amount); });
+        document.getElementById('pay-selected-count').innerText = `เลือก ${selected.length} รายการ`;
+        document.getElementById('pay-total-amount').innerText = '฿' + total.toLocaleString();
+        document.getElementById('pay-proceed-btn').disabled = (total === 0);
+    }
+
+    function goToPaymentQR() {
+        const selected = document.querySelectorAll('#installment-list .install-card.selected');
+        let total = 0;
+        const items = [];
+        selected.forEach(c => {
+            total += Number(c.dataset.amount);
+            items.push(c.dataset.period);
+        });
+        window._paymentData = { total, items };
+        document.getElementById('qr-amount-text').innerText = total.toLocaleString() + '.00';
+        drawMockQR(total);
+        showView('view-payment-qr');
+        startQRCountdown();
+    }
+
+    function drawMockQR(seed) {
+        const size = 25;
+        const cells = new Array(size * size);
+        let s = seed || 1;
+        for (let i = 0; i < size * size; i++) {
+            s = (s * 1103515245 + 12345) & 0x7fffffff;
+            cells[i] = s % 100 < 48 ? 1 : 0;
+        }
+        // วาด finder pattern 3 มุม
+        function setFinder(ox, oy) {
+            // เคลียร์ padding รอบ finder ก่อน
+            for (let y = -1; y <= 7; y++) {
+                for (let x = -1; x <= 7; x++) {
+                    const px = ox + x, py = oy + y;
+                    if (px < 0 || py < 0 || px >= size || py >= size) continue;
+                    if (x < 0 || x > 6 || y < 0 || y > 6) cells[py * size + px] = 0;
+                }
+            }
+            for (let y = 0; y < 7; y++) {
+                for (let x = 0; x < 7; x++) {
+                    const isBorder = (x === 0 || x === 6 || y === 0 || y === 6);
+                    const isInner = (x >= 2 && x <= 4 && y >= 2 && y <= 4);
+                    cells[(oy + y) * size + (ox + x)] = (isBorder || isInner) ? 1 : 0;
+                }
+            }
+        }
+        setFinder(0, 0);
+        setFinder(size - 7, 0);
+        setFinder(0, size - 7);
+
+        const sz = 240;
+        const cell = sz / size;
+        let rects = '';
+        for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+                if (cells[y * size + x]) {
+                    rects += `<rect x="${(x * cell).toFixed(2)}" y="${(y * cell).toFixed(2)}" width="${cell.toFixed(2)}" height="${cell.toFixed(2)}" fill="#000"/>`;
+                }
+            }
+        }
+        document.getElementById('qr-code-container').innerHTML =
+            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${sz} ${sz}" preserveAspectRatio="xMidYMid meet">${rects}</svg>`;
+    }
+
+    function startQRCountdown() {
+        if (paymentTimer) clearInterval(paymentTimer);
+        let total = 15 * 60;
+        const display = document.getElementById('qr-timer');
+        paymentTimer = setInterval(() => {
+            total--;
+            if (total < 0) { clearInterval(paymentTimer); display.innerText = '0:00'; return; }
+            const m = Math.floor(total / 60);
+            const s = total % 60;
+            display.innerText = `${m}:${s.toString().padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    function confirmPayment() {
+        if (paymentTimer) clearInterval(paymentTimer);
+        const data = window._paymentData || { total: 0, items: [] };
+
+        const now = new Date();
+        const thaiMonths = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+        const datetime = `${now.getDate()} ${thaiMonths[now.getMonth()]} ${(now.getFullYear() + 543) % 100} · ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        const ref = 'PMT' + Math.floor(10000000 + Math.random() * 89999999);
+
+        document.getElementById('slip-datetime').innerText = datetime;
+        document.getElementById('slip-ref').innerText = ref;
+        document.getElementById('slip-items').innerText = data.items.join(', ') || '-';
+        document.getElementById('slip-total').innerText = '฿' + data.total.toLocaleString() + '.00';
+
+        // เคลียร์การเลือก เผื่อกลับมาชำระเพิ่ม
+        document.querySelectorAll('#installment-list .install-card.selected').forEach(c => c.classList.remove('selected'));
+        updatePaymentTotal();
+
+        document.getElementById('loading-text').innerText = "กำลังตรวจสอบการชำระเงิน";
+        document.getElementById('thaid-loading-img').style.display = 'none';
+        showView('view-thaid');
+        setTimeout(() => { showView('view-payment-success'); }, 2000);
     }
 
     function handleLoanClick() {
